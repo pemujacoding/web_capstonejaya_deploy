@@ -1,4 +1,3 @@
-from moviepy import VideoFileClip
 import tempfile
 import os
 import json
@@ -69,28 +68,20 @@ def input_files(video_path,filename,ext,interview_id,question):
         print("Ext invalid")
         return None, None
 
-    compressed_path = create_temp_path(".mp4")
     audio_path = create_temp_path(".wav")
 
     try:
-        # compress input video
-        if not compress_video(video_path, compressed_path):
-            print("compression failed")
-            return None, None
 
         # extract audio
-        if not extract_audio(compressed_path, audio_path):
+        if not extract_audio(video_path, audio_path):
             print("audio extraction failed")
             return None, None
 
-        # load files
-        with open(compressed_path, "rb") as f:
-            compressed_bytes = f.read()
         with open(audio_path, "rb") as f:
             audio_bytes = f.read()
 
         # run ai
-        result_cd = yolo.run_detection(compressed_path)
+        result_cd = yolo.run_detection(video_path)
         result_stt = stt.speech_to_text(audio_bytes, os.path.basename(video_path), question)
 
         conn_input.insert_video_bytes(
@@ -103,7 +94,7 @@ def input_files(video_path,filename,ext,interview_id,question):
         return result_cd, result_stt
 
     finally:
-        for p in [compressed_path, audio_path]:
+        for p in [video_path, audio_path]:
             if os.path.exists(p):
                 os.remove(p)
 
