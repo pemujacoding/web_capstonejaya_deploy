@@ -4,7 +4,6 @@ import model.interview as conn_interview
 import model.candidates as conn_candidates
 import model.final_result as conn_final
 import os
-import json
 import processing.input_process as p_input
 import processing.gemini as g_input
 import tempfile
