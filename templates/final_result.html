@@ -1,0 +1,66 @@
+{% extends "base_dashboard.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mt-4 mb-4">Final Result of Interview #{{ interview[0] }}</h1>
+
+    <div class="card shadow-sm p-3 mb-4">
+        <div class="d-flex align-items-center mb-3">
+            {% if interview.photoUrl %}
+                <img src="{{ interview.photoUrl }}" alt="Candidate Photo" class="rounded mr-3" style="width:80px;height:80px;object-fit:cover;">
+            {% endif %}
+            <div>
+                <h5 class="mb-1">{{ interview[6] }}</h5>
+                <p class="mb-0 text-muted">Candidate ID: {{ interview[2] }}</p>
+                <p class="mb-0 text-muted">Candidate Email: {{ interview[7] }}</p>
+            </div>
+        </div>
+
+        <hr>
+
+        {% if final %}
+            <div class="json-scroll mb-3">
+                 <h5>Final Assessment</h5>
+                <pre>{{ final.result }}</pre>
+            </div>
+        {% else %}
+            <p class="text-muted">Final result has not been generated yet.</p>
+            <h5>Enter Final Assessment</h5>
+            <form action="" method="POST">
+                <div class="form-group mb-3">
+                    <label for="project">Project Score</label>
+                    <input type="number" step="0.01" max="100" min="0" class="form-control" id="project" name="project" placeholder="Enter project score"
+                    value="{{ final.project if final else '' }}">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="certificate">Certificate Title</label>
+                    <input type="text" class="form-control" id="certificate" name="certificate" placeholder="Enter certificate title"
+                    value="{{ final.certificate if final else '' }}">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="status">Certificate status</label>
+                    <select class="form-control" id="cert_status" name="cert_status">
+                        <option value="Finished">Finished</option>
+                        <option value="On Training">On Training</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="decision">Decision</label>
+                    <select class="form-control" id="decision" name="decision">
+                        <option value="Passed" {% if final and final.decision == 'Passed' %}selected{% endif %}>Passed</option>
+                        <option value="Did Not Pass" {% if final and final.decision == 'Did Not Pass' %}selected{% endif %}>Did Not Pass</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Final Result</button>
+                <a href="{{ url_for('history') }}" class="btn btn-secondary ml-2">Cancel</a>
+            </form>
+        {% endif %}
+
+        <hr>
+    </div>
+</div>
+{% endblock %}

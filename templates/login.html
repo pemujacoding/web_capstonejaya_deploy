@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/style1.css">
+</head>
+
+<body>
+
+    <div class="login-container">
+        <div class="card login-card shadow d-flex flex-row overflow-hidden">
+            
+            <div class="col-12 col-md-6 p-0 d-flex align-items-center justify-content-center">
+                <img src="/static/amico.png" alt="login picture" class="login-img">
+            </div>
+            <div class="col-12 col-md-6 card-body">
+                <h3 class="text-center mb-4">RecruitSense AI</h3>
+               {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flashed-messages">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                <form action="/login" method="POST">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" 
+                               name="username" 
+                               id="username" 
+                               class="form-control" 
+                               required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" 
+                               name="password" 
+                               id="password" 
+                               class="form-control" 
+                               required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block custom-btn">
+                        Login
+                    </button>
+                </form>
+                <br>
+                <p class="text-center">New to us?<a href="signin">sign up</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</html>

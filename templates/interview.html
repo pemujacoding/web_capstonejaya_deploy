@@ -1,0 +1,81 @@
+{% extends "base_dashboard.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mt-4">Create New Interview</h1>
+    <p>Input questions and upload videos dynamically.</p>
+    <form method="POST" action="{{ url_for('new_interview') }}" enctype="multipart/form-data">
+
+        <!-- Candidate -->
+        <div class="card shadow-sm mb-4 p-3">
+            <label for="candidate">Choose Candidate:</label>
+            <select name="candidate_id" id="candidate" class="form-select" style="max-width: 200px;" required>
+                <option value="" disabled selected hidden>Select candidate</option>
+                {% for c in candidates %}
+                    <option value="{{ c[0] }}">{{ c[1] }} ({{ c[2] }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Dynamic Question + Video -->
+        <div class="card shadow-sm p-3 mb-4">
+            <h5>Interview Questions</h5>
+            <div id="questionContainer"></div>
+
+            <button type="button" class="btn btn-secondary mt-2" onclick="addQuestion()">
+                + Add Question
+            </button>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn btn-primary mt-3">
+            Start Processing Interview
+        </button>
+
+        <div id="loadingSpinner" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+            background: rgba(0,0,0,0.5); z-index:10000; justify-content:center; align-items:center;">
+            <div class="spinner-border text-light" role="status" style="width:4rem; height:4rem;">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+let counter = 1;
+
+function addQuestion() {
+    const container = document.getElementById("questionContainer");
+
+    const block = document.createElement("div");
+    block.className = "border rounded p-3 mb-3";
+    block.innerHTML = `
+        <label>Question ${counter}:</label>
+        <input type="text" name="questions[]" class="form-control mb-2" placeholder="Enter interview question" required>
+
+        <label>Upload Video for Question ${counter}:</label>
+        <input type="file" name="videos[]" class="form-control-file" accept=".mp4,.webm" required>
+
+        <button type="button" class="btn btn-danger btn-sm mt-2" onclick="this.parentElement.remove()">
+            Remove
+        </button>
+    `;
+
+    container.appendChild(block);
+    counter++;
+}
+
+// Show spinner on submit
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("form");
+    const spinner = document.getElementById("loadingSpinner");
+    const btn = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", () => {
+        spinner.style.display = "flex";
+        btn.disabled = true;
+        btn.innerText = "Processing...";
+    });
+});
+</script>
+
+{% endblock %}

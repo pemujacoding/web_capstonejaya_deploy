@@ -1,0 +1,134 @@
+{% extends "base_dashboard.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h1 class="mt-4 mb-4">Your Interview History</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flashed-messages mb-4">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if interview_list|length == 0 %}
+        <p class="text-muted mt-5">You have no interview history yet.</p>
+    {% else %}
+
+        {% for interview in interview_list %}
+        <div class="card shadow-sm mb-4 p-3">
+
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4 class="mb-1">Interview #{{ interview.interview_id }}</h4>
+                    <p class="text-muted mb-1">
+                        Created at: {{ interview.created_at }} | Candidate ID : {{interview.candidate_id}}
+                    </p>
+                {% if interview.status == "Succeed" %}
+                    <span class="badge badge-success">
+                        Status: {{ interview.status }}
+                    </span>
+                {% elif interview.status == "Pending" %}
+                    <span class="badge badge-warning">
+                        Status: {{ interview.status }}
+                    </span>
+                {% else %}
+                    <span class="badge badge-secondary">
+                        Status: {{ interview.status }}
+                    </span>
+                {% endif %}
+                </div>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <a href="{{ url_for('delete_interview', interview_id=interview.interview_id) }}" class="btn btn-danger mt-3" onclick="return confirm('Are you sure?');">Delete</a>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('final_result',interview_id=interview.interview_id) }}" class="btn btn-primary mt-3 ml-1">Final Score</a>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+            <div class="d-flex">
+                <div>
+                    <h5 class="mt-3">Interview Scoring</h5>
+                </div>
+                <div class="json-container ml-5">
+                    <p>
+                        <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#score{{interview.interview_id}}" aria-expanded="false" aria-controls="collapseExample">
+                            Interview Scoring
+                        </button>
+                    </p>
+                    <div class="collapse" id="score{{interview.interview_id}}">
+                        <div class="card card-body">
+                            <pre id="score{{interview.interview_id}}" class="json-scroll">{{ interview.result_interview }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <h5 class="mt-3">Uploaded Videos</h5>
+
+            {% if interview.videos|length == 0 %}
+                <p class="text-muted">No videos uploaded yet.</p>
+            {% else %}
+                <ul class="list-group">
+                    {% for video in interview.videos %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <strong>{{ video.file_name }}</strong><br>
+                            <small class="text-muted">Video ID: {{ video.video_id }}</small>
+                        </div>
+                    <div class="json-container">
+                        <p>
+                            <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#stt{{video.video_id}}" aria-expanded="false" aria-controls="collapseExample">
+                                STT result
+                            </button>
+                        </p>
+                        <div class="collapse" id="stt{{video.video_id}}">
+                            <div class="card card-body">
+                                <pre id="stt{{video.video_id}}" class="json-scroll">{{ video.result_stt }}</pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="json-container">
+                        <p>
+                            <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#cd{{video.video_id}}" aria-expanded="false" aria-controls="collapseExample">
+                                Cheating Detection
+                            </button>
+                        </p>
+                        <div class="collapse" id="cd{{video.video_id}}">
+                            <div class="card card-body">
+                                <pre id="cd{{video.video_id}}" class="json-scroll">{{ video.result_cd }}</pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+        </div>
+        {% endfor %}
+
+    {% endif %}
+</div>
+<script>
+function toggleDetail(id) {
+    const el = document.getElementById(id);
+    el.style.display = (el.style.display === "none" || el.style.display === "") 
+        ? "block" : "none";
+}
+</script>
+{% endblock %}
